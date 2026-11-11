@@ -1,18 +1,14 @@
-import requests 
+from db import get_prices, save_prices
+from exchange import get_binance_prices, get_bybit_prices, get_okx_prices
+import time
 
-try:
+while True:
+    binance_tickers = get_binance_prices()
+    bybit_tickers = get_bybit_prices()
+    okx_tickers = get_okx_prices()
 
-    r = requests.get('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT', timeout = 10)
-
-    r.raise_for_status()
-
-    data = r.json()
-
-    symbol = data["symbol"]
-    price = data["price"]
+    save_prices(binance_tickers, "binance")
+    save_prices(bybit_tickers, "bybit")
+    save_prices(okx_tickers, "okx")
+    time.sleep(120)
     
-    print(price, type(price))
-except requests.exceptions.HTTPError as http_err:
-    print(f'HTTP error occured: {http_err}')
-except requests.exceptions.RequestException as err:
-    print(f'Other error occured: {err}')
